@@ -7,7 +7,7 @@
 const { Gateway, Wallets } = require('fabric-network');
 const path = require('path');
 
-const ccpPath = path.resolve(__dirname, '..', '..', 'first-network', 'connection-org1.json');
+const ccpPath = path.join('..', '..', 'test-network', 'organizations','peerOrganizations', 'org1.example.com','connection-org1.json');
 
 async function main() {
     try {
@@ -18,7 +18,7 @@ async function main() {
         console.log(`Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
-        const identity = await wallet.get('user1');
+        const identity = await wallet.get('user2');
         if (!identity) {
             console.log('An identity for the user "user1" does not exist in the wallet');
             console.log('Run the registerUser.js application before retrying');
@@ -27,10 +27,10 @@ async function main() {
 
         // Create a new gateway for connecting to our peer node.
         const gateway = new Gateway();
-        await gateway.connect(ccpPath, { wallet, identity: 'user1', discovery: { enabled: true, asLocalhost: true } });
+        await gateway.connect(ccpPath, { wallet, identity: 'user2', discovery: { enabled: true, asLocalhost: true } });
 
         // Get the network (channel) our contract is deployed to.
-        const network = await gateway.getNetwork('mychannel');
+        const network = await gateway.getNetwork('main');
 
         // Get the contract from the network.
         const contract = network.getContract('fabcar');

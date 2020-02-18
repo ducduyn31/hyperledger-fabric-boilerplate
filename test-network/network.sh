@@ -31,6 +31,7 @@ function printHelp() {
   echo "    Flags:"
   echo "    -ca <use CAs> -  create Certificate Authorities to generate the crypto material"
   echo "    -c <channel name> - channel name to use (defaults to \"mychannel\")"
+  echo "    -C <chaincode name> - chaincode name to use (defaults to \"fabcar\")"
   echo "    -s <dbtype> - the database backend to use: goleveldb (default) or couchdb"
   echo "    -r <max retry> - CLI times out after certain number of attempts (defaults to 5)"
   echo "    -d <delay> - delay duration in seconds (defaults to 3)"
@@ -41,18 +42,18 @@ function printHelp() {
   echo "  network.sh -h (print this message)"
   echo
   echo " Possible Mode and flags"
-  echo "  network.sh up -ca -c -r -d -s -i -verbose"
+  echo "  network.sh up -ca -c -C -r -d -s -i -verbose"
   echo "  network.sh up createChannel -ca -c -r -d -s -i -verbose"
   echo "  network.sh createChannel -c -r -d -verbose"
-  echo "  network.sh deployCC -l -v -r -d -verbose"
+  echo "  network.sh deployCC -C -l -v -r -d -verbose"
   echo
   echo " Taking all defaults:"
   echo "	network.sh up"
   echo
   echo " Examples:"
-  echo "  network.sh up createChannel -ca -c mychannel -s couchdb -i 2.0.0-beta"
+  echo "  network.sh up createChannel -ca -c mychannel -C fabcar -s couchdb -i 2.0.0-beta"
   echo "  network.sh createChannel -c channelName"
-  echo "  network.sh deployCC -l javascript"
+  echo "  network.sh deployCC -C chaincodeName -l javascript"
 }
 
 # Obtain CONTAINER_IDS and remove them
@@ -370,7 +371,7 @@ function createChannel() {
 ## Call the script to isntall and instantiate a chaincode on the channel
 function deployCC() {
 
-  scripts/deployCC.sh $CHANNEL_NAME $CC_RUNTIME_LANGUAGE $VERSION $CLI_DELAY $MAX_RETRY $VERBOSE
+  scripts/deployCC.sh $CHANNEL_NAME $CC_RUNTIME_LANGUAGE $VERSION $CLI_DELAY $MAX_RETRY $VERBOSE $CC_NAME
 
   if [ $? -ne 0 ]; then
     echo "ERROR !!! Deploying chaincode failed"
@@ -441,6 +442,8 @@ VERSION=1
 IMAGETAG="latest"
 # default database
 DATABASE="leveldb"
+# default chaincode name
+CC_NAME="fabcar"
 
 # Parse commandline args
 
@@ -473,6 +476,10 @@ while [[ $# -ge 1 ]] ; do
     ;;
   -c )
     CHANNEL_NAME="$2"
+    shift
+    ;;
+  -C )
+    CC_NAME="$2"
     shift
     ;;
   -ca )
